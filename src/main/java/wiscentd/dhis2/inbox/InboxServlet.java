@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,6 +25,8 @@ public class InboxServlet extends HttpServlet {
             InputStream is = getClass().getClassLoader().getResourceAsStream("inbox.properties");
             properties.load(is);
             BASE_PATH = properties.getProperty("base_path");
+            BASE_PATH = Paths.get(!BASE_PATH.startsWith("/") ? System.getenv("DHIS2_HOME") : "", BASE_PATH).toString();
+
             HARDCODED_TOKEN = properties.getProperty("hardcoded_token");
             File baseDir = new File(BASE_PATH);
             if (!baseDir.exists()) baseDir.mkdirs();
