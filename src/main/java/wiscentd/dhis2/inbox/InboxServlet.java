@@ -8,13 +8,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 @WebServlet("/upload")
-@MultipartConfig
+@MultipartConfig()
 public class InboxServlet extends HttpServlet {
     private String BASE_PATH, HARDCODED_TOKEN;
 
@@ -35,22 +38,18 @@ public class InboxServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // TODO: Implement proper token usage
-        if (!request.getParameter("token").equals(HARDCODED_TOKEN)) return;
+        if (!request.getHeader("token").equals(HARDCODED_TOKEN)) return;
 
-        String creationModality = request.getParameter("creationModality");
-        String instance = request.getParameter("instance");
-        String title = instance + "-" + creationModality + "-" + new SimpleDateFormat("yyMMddHHmmss")
+        String creationModality = request.getHeader("creationModality");
+        String instance = request.getHeader("instance");
+        String title = instance + "-" + creationModality + "-" + new SimpleDateFormat("yyMMdd-HHmmss")
                 .format(Calendar.getInstance().getTime());
 
-        String[] files = {"zipFile", "jsonFile"};
+        storeFile(title + "-dataValueSets.json", request.getPart("jsonResult").getInputStream());
 
-        for (String file : files) {
-            Part filePart = request.getPart(file);
-            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-            storeFile(title + "-" + fileName, filePart.getInputStream());
-        }
+        response.sendRedirect(request.getContextPath());
     }
 
     private void storeFile(String fileName, InputStream fileContent) throws IOException {
