@@ -6,14 +6,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 @WebServlet("/upload")
@@ -42,14 +36,9 @@ public class InboxServlet extends HttpServlet {
         // TODO: Implement proper token usage
         if (!request.getHeader("token").equals(HARDCODED_TOKEN)) return;
 
-        String creationModality = request.getHeader("creationModality");
-        String instance = request.getHeader("instance");
-        String title = instance + "-" + creationModality + "-" + new SimpleDateFormat("yyMMdd-HHmmss")
-                .format(Calendar.getInstance().getTime());
+        storeFile(request.getPart("jsonResult").getName(), request.getPart("jsonResult").getInputStream());
 
-        storeFile(title + "-dataValueSets.json", request.getPart("jsonResult").getInputStream());
-
-        response.sendRedirect(request.getContextPath());
+        response.setStatus(200);
     }
 
     private void storeFile(String fileName, InputStream fileContent) throws IOException {
