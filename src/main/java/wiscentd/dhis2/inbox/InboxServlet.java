@@ -35,10 +35,6 @@ public class InboxServlet extends HttpServlet {
         if (rootPath.isAbsolute()) BASE_PATH = rootPath.toString();
         else BASE_PATH = Paths.get(WISCENTD_HOME, BASE_PATH).toString();
 
-        // Ensure working dir exists
-        File baseDir = new File(BASE_PATH);
-        if (!baseDir.exists()) baseDir.mkdirs();
-
         // Gather hard-coded token from configuration file
         HARDCODED_TOKEN = configurationFile.getProperty("hardcoded_token");
     }
@@ -60,8 +56,10 @@ public class InboxServlet extends HttpServlet {
         final String fileName = getFileName(filePart);
 
         try {
-            OutputStream out = new FileOutputStream(new File(BASE_PATH + File.separator
-                    + fileName));
+            File destinationFile = new File(BASE_PATH + File.separator + fileName);
+            destinationFile.getParentFile().mkdirs();
+            destinationFile.createNewFile();
+            OutputStream out = new FileOutputStream(destinationFile);
             InputStream fileContent = filePart.getInputStream();
 
             int read;
