@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 public class InboxServlet extends HttpServlet {
     private static Logger logger = Logger.getLogger(InboxServlet.class.getName());
 
-    private String BASE_PATH, HARDCODED_TOKEN;
+    private String BASE_PATH, AUTH_TOKEN;
 
     public InboxServlet() {
         ConfigurationFile configurationFile = new ConfigurationFile("inbox.properties");
@@ -36,13 +36,13 @@ public class InboxServlet extends HttpServlet {
         else BASE_PATH = Paths.get(WISCENTD_HOME, BASE_PATH).toString();
 
         // Gather hard-coded token from configuration file
-        HARDCODED_TOKEN = configurationFile.getProperty("hardcoded_token");
+        AUTH_TOKEN = configurationFile.getProperty("auth_token");
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO: Implement proper token usage
-        if (!request.getHeader("token").equals(HARDCODED_TOKEN)) return;
+        if (!request.getHeader("token").equals(AUTH_TOKEN)) return;
 
         processRequest(request, response);
     }
