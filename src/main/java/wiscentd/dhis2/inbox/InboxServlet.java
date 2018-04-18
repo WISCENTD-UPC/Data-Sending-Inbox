@@ -22,7 +22,7 @@ public class InboxServlet extends HttpServlet {
     private String BASE_PATH, AUTH_TOKEN;
 
     public InboxServlet() {
-        ConfigurationFile configurationFile = new ConfigurationFile("inbox.properties");
+        ConfigurationFile configurationFile = new ConfigurationFile("config/inbox.properties");
 
         // Get BASE_PATH, we expect $WISCENTD_HOME to be initialized
         // If it's not we use CATALINA_HOME to default root
