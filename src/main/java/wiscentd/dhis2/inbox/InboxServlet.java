@@ -22,18 +22,11 @@ public class InboxServlet extends HttpServlet {
     private String BASE_PATH, AUTH_TOKEN;
 
     public InboxServlet() {
-        ConfigurationFile configurationFile = new ConfigurationFile("config/inbox.properties");
+        ConfigurationFile configurationFile = new ConfigurationFile("inbox");
 
-        // Get BASE_PATH, we expect $WISCENTD_HOME to be initialized
-        // If it's not we use CATALINA_HOME to default root
-        String WISCENTD_HOME = System.getenv("WISCENTD_HOME");
-        if (WISCENTD_HOME == null) WISCENTD_HOME = System.getenv("CATALINA_HOME");
-
-        // The final upload folder name is gathered from ConfigurationFiles
-        // ConfigurationFiles can override the logic by adding an absolute path to the configuration file
-        Path rootPath = Paths.get(configurationFile.getProperty("base_path"));
-        if (rootPath.isAbsolute()) BASE_PATH = rootPath.toString();
-        else BASE_PATH = Paths.get(WISCENTD_HOME, BASE_PATH).toString();
+        // Get BASE_PATH relative to CATALINA_BASE
+        File baseDir = new File(System.getProperty("catalina.base"), "wiscentd");
+        BASE_PATH = new File(baseDir + File.separator + "data-inbox").toString();
 
         // Gather hard-coded token from configuration file
         AUTH_TOKEN = configurationFile.getProperty("auth_token");

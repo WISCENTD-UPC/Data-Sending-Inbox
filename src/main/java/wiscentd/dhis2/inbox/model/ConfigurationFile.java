@@ -14,14 +14,11 @@ public class ConfigurationFile {
 
     public ConfigurationFile(String name) {
         try {
-            // Get BASE_PATH, we expect $WISCENTD_HOME to be initialized
-            // If it's not we use CATALINA_HOME to default root
-            String WISCENTD_HOME = System.getenv("WISCENTD_HOME");
-            if (WISCENTD_HOME == null) WISCENTD_HOME = System.getenv("CATALINA_HOME");
-
-            // Try to get configuration file from $WISCENTD_HOME/conf/name.properties
+            // Get BASE_PATH relative to CATALINA_BASE
+            File configDir = new File(System.getProperty("catalina.base"), "wiscentd");
+            // Try to get configuration file from $CATALINA_BASE/config/name.properties
             // If it fails default to resource on %CLASSPATH%/config/name.properties
-            File configurationFile = new File(WISCENTD_HOME + File.separator + "conf" + File.separator +
+            File configurationFile = new File(configDir + File.separator + "config" + File.separator +
                     name + ".properties");
             InputStream is = configurationFile.exists() ? new FileInputStream(configurationFile) :
                     getClass().getClassLoader().getResourceAsStream("config/" + name + ".properties");
